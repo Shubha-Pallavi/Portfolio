@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FOCUS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/atom-one-dark.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar bg-warning">
+      <div class="container-fluid ps-5 ms-5">
+        <a class="navbar-brand" href="focus.html">
+          <img
+            src="img/focuslogo.jpeg"
+            alt="Logo"
+            width="30"
+            height="24"
+            class="d-inline-block align-text-top"
+            style="width: 12%; height: auto"
+          />
+          <strong class="fs-4">FOCUS</strong>
+        </a>
+      </div>
+    </nav>
+    <div class="row mt-5" style="background-color: rgb(210, 209, 140)">
+      <div class="col-6 p-5">
+        <img src="img/classroom.jpg" class="img-fluid" alt="..." />
+      </div>
+      <div class="col-6 p-5 mt-5">
+        <h1 class="fs-1">
+          Lorem ipsum dolor sit amet consectetur adipisicing.
+        </h1>
+        <br />
+        <span class="fs-4">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Numquam
+          recusandae possimus consectetur quidem dolorum, quibusdrovident
+          pariatur molestiae?
+        </span>
+      </div>
+    </div>
+    <div
+      style="
+        background-color: orange;
+        width: auto;
+        height: 5px;
+        margin: 1rem;
+        margin: 3rem;
+      "
+    ></div>
+    <div class="text-center fs-1">
+      <h1 style="font-size: larger">Samples</h1>
+    </div>
+
+        <div class="row p-5 mt-5" style="background-color: #ffff5d; height: 50vh;">
+            <div class="col-6">
+                <img src="img/Charles Darwin.PNG" class="rounded float-end" alt="..." style="height: 40%; width: auto;"/>
+            </div>
+            <div class="col-6 mt-5 text-center" style="margin-top: 3rem">
+                <br />
+                <h1>Charles Darwin</h1>
+            </div>
+        </div>
+        <div class="row p-5 mt-3" style="background-color: #ffff5d; height: 50vh;">
+            <div class="col-6 mt-5 text-center" style="margin-top: 5rem">
+                <br />
+                <h1>Ratan Tata</h1>
+            </div>
+      <div class="col-6">
+        <img src="img/Ratan Tata.PNG" class="rounded float-start" alt="..." style="height: 40%; width: auto;"/>
+      </div>
+    </div>
+    <!-- <div class="row p-5 mt-3" style="background-color: #ffff5d">
+      <div class="col-6">
+        <img src="img/classroom.jpg" class="img-fluid" alt="..." />
+      </div>
+      <div class="col-6 mt-5 text-center" style="margin-top: 3rem">
+        <br />
+        <h1>Lorem, ipsum dolor.</h1>
+      </div>
+    </div> -->
+    <div class="text-center fs-1 mt-5">
+        <h1 style="font-size: larger">Source Code</h1>
+      </div>
+    <div class="col-12 px-5">
+      <pre>
+            <code style="border-radius: 4rem;padding: 6rem; margin: 2rem;">
+                import os
+                from datetime import datetime
+
+                import face_recognition
+                import cv2
+                import pandas as pd
+
+                known_encodings = []
+                known_names = []
+
+                directory_path = "known-image"  # Path to the directory containing the images
+
+                for filename in os.listdir(directory_path):
+                    if filename.endswith(".jpg") or filename.endswith(".png"):
+                        image_path = os.path.join(directory_path, filename)
+                        image = face_recognition.load_image_file(image_path)
+                        encoding = face_recognition.face_encodings(image)
+
+                        if len(encoding) > 0:
+                            known_encodings.append(encoding[0])
+                            known_names.append(os.path.splitext(filename)[0])  # Use filename as the label (removing the extension)
+
+                video_capture = cv2.VideoCapture(0)
+                current_date = datetime.now().strftime('%Y-%m-%d')
+                excel_file = "attendance{0}.xlsx".format(current_date)
+
+                try:
+                    df=pd.read_excel(excel_file)
+                except FileNotFoundError:
+                    data= {"Name":[],"Presence":[]}
+                    df= pd.DataFrame(data)
+
+                while True:
+                    ret, frame = video_capture.read()
+
+                    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+                    rgb_small_frame = small_frame[:, :, ::-1]
+
+                    face_locations = face_recognition.face_locations(rgb_small_frame)
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+
+                    face_names = []
+                    for face_encoding in face_encodings:
+                        matches = face_recognition.compare_faces(known_encodings, face_encoding)
+                        name = "Unknown"
+
+                        if True in matches:
+                            first_match_index = matches.index(True)
+                            name = known_names[first_match_index]
+
+                        if name != "Unknown":
+                            if name in known_names and name not in df["Name"].values:
+                                current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                                df= df._append({"Name":name,"Presence":current_time}, ignore_index = True)
+
+
+                        face_names.append(name)
+
+                    for (top, right, bottom, left), name in zip(face_locations, face_names):
+                        top *= 4
+                        right *= 4
+                        bottom *= 4
+                        left *= 4
+
+                        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+                        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                        font = cv2.FONT_HERSHEY_DUPLEX
+                        cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.8, (255, 255, 255), 1)
+
+                    cv2.imshow('Focus', frame)
+                    #
+
+                    if cv2.waitKey(1) & 0xFF == ord('e'):
+                        break
+
+                video_capture.release()
+                cv2.destroyAllWindows()
+
+                for name in known_names:
+                    if name not in df['Name'].values:
+                        # current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        absent = "Absent"
+                        df = df._append({'Name': name, 'Presence': absent}, ignore_index=True)
+
+                df.to_excel(excel_file, index=False)
+
+            </code>
+        </pre>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

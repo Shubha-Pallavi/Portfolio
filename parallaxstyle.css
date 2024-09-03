@@ -1,0 +1,96 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    
+}
+
+body{
+    background-color: white;
+
+}
+.nav-bar{
+    position: absolute;
+    margin: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 100px;
+    z-index: 100;
+}
+
+.nav-items{
+    display: flex;
+    justify-content: space-between;
+    justify-items: center;
+    margin-right: 350px;
+}
+
+.logo{
+    color: #359381;
+    font-size: 2.5rem;
+    margin-left: 40px;
+    font-style: bold;
+}
+
+.nav-items a{
+    text-decoration: none;
+    margin: 0px 10px;
+    padding: 5px 20px;
+    font-size: 1.3rem;
+    color: #359381;
+    margin-right: 35px;
+    border-radius: 20px;
+
+}
+
+.nav-items a:hover,
+.nav-items a.active{
+    color: white;
+    background-color: #359381;
+    transition: all 1s;
+}
+
+
+.parallax{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-y: hidden;
+}
+
+#text{
+    position: absolute;
+    font-size: 7em;
+    letter-spacing: 15px;
+    color: white;
+    text-shadow: 4px 4px 8px black;
+}
+
+.parallax img{
+    position: absolute;
+    margin: 0px 0px;
+    width: 100%;
+    pointer-events: none;
+}
+
+.parallax img#deer{
+    margin-top: 200px;
+    width: 300px;
+}
+
+.content{
+    background-color: #003329;
+    color: white;
+    padding: 100px;
+    font-size: large;
+}
+.content h2,
+.content h3{
+    color: #359381;
+}
